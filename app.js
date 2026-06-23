@@ -8,10 +8,24 @@ const pool = require("./src/config/db");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ─── MIDDLEWARE ──────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ─── FIX FOR SUBFOLDER (cPanel/Passenger) ──────────────────
+// This removes the base path (/yesm8pm/live) from the URL
+// so your routes (/, /api) work correctly.
+const basePath = process.env.PASSENGER_BASE_URI || '';
+app.use((req, res, next) => {
+    if (basePath && req.url.startsWith(basePath)) {
+        req.url = req.url.slice(basePath.length) || '/';
+    }
+    next();
+});
+// ─── END OF FIX ─────────────────────────────────────────────
+
+// ─── ROUTES ──────────────────────────────────────────────────
 app.get("/", (req, res) => {
   res.json({
     message: "YesM8 Job API",
@@ -21,6 +35,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", jobRoutes);
 
+// ─── ERROR HANDLERS ─────────────────────────────────────────
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -32,7 +47,7 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: "Endpoint not found" });
 });
 
-// ─── Graceful Shutdown ──────────────────────────────────────
+// ─── GRACEFUL SHUTDOWN ──────────────────────────────────────
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
