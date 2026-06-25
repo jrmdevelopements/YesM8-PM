@@ -1,190 +1,118 @@
 const pool = require("../config/db");
 
 class Job {
-  // ─── CREATE ──────────────────────────────────────────────
+  // List of all database columns (except auto-generated id, created_at, updated_at)
+  // We'll use this to build INSERT and UPDATE queries dynamically.
+  static DB_COLUMNS = [
+    "sm8_account_uuid",
+    "job_uuid",
+    "generated_job_id",
+    "notes",
+    "q_what_after",
+    "q_diff_app",
+    "q_diff_app_details",
+    "q_special_integration",
+    "q_has_website",
+    "q_website_address",
+    "q_website_form_link",
+    "q_devices",
+    "q_staff_android",
+    "q_android_limitation",
+    "q_accounting",
+    "q_accounting_package",
+    "q_accounting_other_warning",
+    "q_avg_jobs",
+    "q_templates",
+    "q_checklist",
+    "q_checklist_examples",
+    "q_forms",
+    "q_forms_examples",
+    "q_special_features",
+    "q_plan",
+    "q_explained_plans",
+    "q_plan_notes",
+    "q_training",
+    "q_other_notes"
+  ];
+
+  // Map internal snake_case keys (from controller) to DB column names
+  static internalToDbMap = {
+    sm8_account_uuid: "sm8_account_uuid",
+    job_uuid: "job_uuid",
+    generated_job_id: "generated_job_id",
+    notes: "notes",
+    what_after: "q_what_after",
+    diff_app: "q_diff_app",
+    diff_app_details: "q_diff_app_details",
+    special_integration: "q_special_integration",
+    has_website: "q_has_website",
+    website_address: "q_website_address",
+    website_form_link: "q_website_form_link",
+    devices: "q_devices",
+    staff_android: "q_staff_android",
+    android_limitation: "q_android_limitation",
+    accounting: "q_accounting",
+    accounting_package: "q_accounting_package",
+    accounting_other_warning: "q_accounting_other_warning",
+    avg_jobs: "q_avg_jobs",
+    templates: "q_templates",
+    checklist: "q_checklist",
+    checklist_examples: "q_checklist_examples",
+    forms: "q_forms",
+    forms_examples: "q_forms_examples",
+    special_features: "q_special_features",
+    plan: "q_plan",
+    explained_plans: "q_explained_plans",
+    plan_notes: "q_plan_notes",
+    training: "q_training",
+    other_notes: "q_other_notes"
+  };
+
+  // JSON fields that need stringify/parse
+  static JSON_FIELDS = ["q_devices", "q_special_features"];
+
   static async create(jobData) {
+    // Build column list and values using the mapping
+    const columns = [];
+    const placeholders = [];
+    const values = [];
+
+    for (const [internalKey, dbColumn] of Object.entries(this.internalToDbMap)) {
+      if (jobData[internalKey] !== undefined) {
+        columns.push(dbColumn);
+        placeholders.push("?");
+        let val = jobData[internalKey];
+        // Stringify JSON fields
+        if (this.JSON_FIELDS.includes(dbColumn) && val !== null && val !== undefined) {
+          val = JSON.stringify(val);
+        }
+        values.push(val);
+      }
+    }
+
+    if (columns.length === 0) {
+      throw new Error("No data provided to create job");
+    }
+
     const query = `
-      INSERT INTO jobs (
-        sm8_account_uuid, client_name, client_address, job_uuid, job_number, po_number,
-        job_created_date, job_created_time, job_address, job_status, job_category,
-        acknowledge_date, acknowledge_time,
-        client_wo_received_date, client_wo_received_time,
-        target_start_date, target_start_time,
-        actual_start_date, actual_start_time,
-        target_completion_date, target_completion_time,
-        work_completion_date, work_completion_time,
-        hold_point_on, hold_point_off, hold_point_reason,
-        extension_status, extension_cause, extension_request_date, extension_start_time, revised_completion_date, revised_completion_time,
-        defects_end_date, notes,
-        owner, tradetype, other_trade_type, sub_contractors,
-        quote_issued_date, quote_issued_time,
-        quote_approval_date, quote_approval_time,
-        actual_completion_date, actual_completion_time,
-        extension_reason,
-        invoice_issued_date, invoice_paid_date,
-        cost_saving_discount_provided, cost_saving_discount_provided_date, cost_saving_discount_provided_amount,
-        escalation, escalation_date, oban_escalation_response_date, escalation_outcomes,
-        quality_assessment_completed, quality_assessment_outcome,
-        warranty_end_date,
-        -- Discovery fields
-        what_after, diff_app, diff_app_details, special_integration,
-        has_website, website_address, website_form_link,
-        devices,
-        staff_android, android_limitation,
-        accounting, accounting_package, accounting_other_warning,
-        avg_jobs, templates,
-        checklist, checklist_examples,
-        forms, forms_examples,
-        special_features,
-        plan, explained_plans, plan_notes,
-        training, other_notes
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?, ?, ?,
-        ?, ?,
-        ?, ?, ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?,
-        ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?,
-        ?, ?,
-        ?,
-        -- Discovery values
-        ?, ?, ?, ?,
-        ?, ?, ?,
-        ?,
-        ?, ?,
-        ?, ?, ?,
-        ?, ?,
-        ?, ?,
-        ?, ?,
-        ?,
-        ?, ?, ?,
-        ?, ?
-      )
+      INSERT INTO jobs (${columns.join(", ")})
+      VALUES (${placeholders.join(", ")})
     `;
-
-    // Helper to stringify JSON arrays
-    const jsonStringify = (val) => (val ? JSON.stringify(val) : null);
-
-    const values = [
-      jobData.sm8_account_uuid,
-      jobData.client_name,
-      jobData.client_address,
-      jobData.job_uuid,
-      jobData.job_number,
-      jobData.po_number,
-      jobData.job_created_date,
-      jobData.job_created_time,
-      jobData.job_address,
-      jobData.job_status,
-      jobData.job_category,
-      jobData.acknowledge_date,
-      jobData.acknowledge_time,
-      jobData.client_wo_received_date,
-      jobData.client_wo_received_time,
-      jobData.target_start_date,
-      jobData.target_start_time,
-      jobData.actual_start_date,
-      jobData.actual_start_time,
-      jobData.target_completion_date,
-      jobData.target_completion_time,
-      jobData.work_completion_date,
-      jobData.work_completion_time,
-      jobData.hold_point_on,
-      jobData.hold_point_off,
-      jobData.hold_point_reason,
-      jobData.extension_status,
-      jobData.extension_cause,
-      jobData.extension_request_date,
-      jobData.extension_start_time,
-      jobData.revised_completion_date,
-      jobData.revised_completion_time,
-      jobData.defects_end_date,
-      jobData.notes,
-      jobData.owner,
-      jobData.tradetype,
-      jobData.other_trade_type,
-      jobData.sub_contractors,
-      jobData.quote_issued_date,
-      jobData.quote_issued_time,
-      jobData.quote_approval_date,
-      jobData.quote_approval_time,
-      jobData.actual_completion_date,
-      jobData.actual_completion_time,
-      jobData.extension_reason,
-      jobData.invoice_issued_date,
-      jobData.invoice_paid_date,
-      jobData.cost_saving_discount_provided,
-      jobData.cost_saving_discount_provided_date,
-      jobData.cost_saving_discount_provided_amount,
-      jobData.escalation,
-      jobData.escalation_date,
-      jobData.oban_escalation_response_date,
-      jobData.escalation_outcomes,
-      jobData.quality_assessment_completed,
-      jobData.quality_assessment_outcome,
-      jobData.warranty_end_date,
-      // Discovery values
-      jobData.whatAfter,
-      jobData.diffApp,
-      jobData.diffAppDetails,
-      jobData.specialIntegration,
-      jobData.hasWebsite,
-      jobData.websiteAddress,
-      jobData.websiteFormLink,
-      jsonStringify(jobData.devices),
-      jobData.staffAndroid,
-      jobData.androidLimitation,
-      jobData.accounting,
-      jobData.accountingPackage,
-      jobData.accountingOtherWarning,
-      jobData.avgJobs,
-      jobData.templates,
-      jobData.checklist,
-      jobData.checklistExamples,
-      jobData.forms,
-      jobData.formsExamples,
-      jsonStringify(jobData.specialFeatures),
-      jobData.plan,
-      jobData.explainedPlans,
-      jobData.planNotes,
-      jobData.training,
-      jobData.otherNotes,
-    ];
 
     const [result] = await pool.query(query, values);
     return await this.findByUuid(jobData.job_uuid);
   }
 
-  // ─── FIND BY UUID ─────────────────────────────────────────
   static async findByUuid(job_uuid) {
-    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [
-      job_uuid,
-    ]);
+    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [job_uuid]);
     return rows[0] || null;
   }
 
-  // ─── FIND ALL ─────────────────────────────────────────────
   static async findAll() {
-    const [rows] = await pool.query(
-      "SELECT * FROM jobs ORDER BY created_at DESC"
-    );
+    const [rows] = await pool.query("SELECT * FROM jobs ORDER BY created_at DESC");
     return rows;
   }
 
-  // ─── FIND BY ACCOUNT ──────────────────────────────────────
   static async findByAccount(sm8_account_uuid) {
     const [rows] = await pool.query(
       "SELECT * FROM jobs WHERE sm8_account_uuid = ? ORDER BY created_at DESC",
@@ -193,12 +121,7 @@ class Job {
     return rows;
   }
 
-  // ─── FIND BY ACCOUNT + DATE RANGE ────────────────────────
-  static async findByAccountAndDateRange(
-    sm8_account_uuid,
-    start_date,
-    end_date
-  ) {
+  static async findByAccountAndDateRange(sm8_account_uuid, start_date, end_date) {
     const [rows] = await pool.query(
       `SELECT * FROM jobs
        WHERE sm8_account_uuid = ?
@@ -209,122 +132,33 @@ class Job {
     return rows;
   }
 
-  // ─── UPDATE ───────────────────────────────────────────────
   static async update(job_uuid, jobData) {
-    // Allowed fields – includes all columns (including discovery)
-    const allowedFields = [
-      "sm8_account_uuid",
-      "client_name",
-      "client_address",
-      "job_number",
-      "po_number",
-      "job_address",
-      "job_status",
-      "job_category",
-      "job_created_date",
-      "job_created_time",
-      "acknowledge_date",
-      "acknowledge_time",
-      "client_wo_received_date",
-      "client_wo_received_time",
-      "target_start_date",
-      "target_start_time",
-      "actual_start_date",
-      "actual_start_time",
-      "target_completion_date",
-      "target_completion_time",
-      "work_completion_date",
-      "work_completion_time",
-      "hold_point_on",
-      "hold_point_off",
-      "hold_point_reason",
-      "extension_status",
-      "extension_cause",
-      "extension_request_date",
-      "extension_start_time",
-      "extension_reason",
-      "revised_completion_date",
-      "revised_completion_time",
-      "defects_end_date",
-      "notes",
-      "owner",
-      "tradetype",
-      "other_trade_type",
-      "sub_contractors",
-      "quote_issued_date",
-      "quote_issued_time",
-      "quote_approval_date",
-      "quote_approval_time",
-      "actual_completion_date",
-      "actual_completion_time",
-      "invoice_issued_date",
-      "invoice_paid_date",
-      "cost_saving_discount_provided",
-      "cost_saving_discount_provided_date",
-      "cost_saving_discount_provided_amount",
-      "escalation",
-      "escalation_date",
-      "oban_escalation_response_date",
-      "escalation_outcomes",
-      "quality_assessment_completed",
-      "quality_assessment_outcome",
-      "warranty_end_date",
-      // Discovery fields
-      "what_after",
-      "diff_app",
-      "diff_app_details",
-      "special_integration",
-      "has_website",
-      "website_address",
-      "website_form_link",
-      "devices",
-      "staff_android",
-      "android_limitation",
-      "accounting",
-      "accounting_package",
-      "accounting_other_warning",
-      "avg_jobs",
-      "templates",
-      "checklist",
-      "checklist_examples",
-      "forms",
-      "forms_examples",
-      "special_features",
-      "plan",
-      "explained_plans",
-      "plan_notes",
-      "training",
-      "other_notes",
-    ];
-
-    const fields = [];
+    const updates = [];
     const values = [];
-    const jsonFields = ["devices", "special_features"];
 
-    allowedFields.forEach((field) => {
-      // map frontend camelCase to DB snake_case
-      let dbField = field;
-      let value = jobData[field];
-      if (value !== undefined) {
-        // If it's a JSON field, stringify
-        if (jsonFields.includes(dbField)) {
-          value = value ? JSON.stringify(value) : null;
+    for (const [internalKey, dbColumn] of Object.entries(this.internalToDbMap)) {
+      if (jobData[internalKey] !== undefined) {
+        let val = jobData[internalKey];
+        // Stringify JSON fields
+        if (this.JSON_FIELDS.includes(dbColumn) && val !== null && val !== undefined) {
+          val = JSON.stringify(val);
         }
-        fields.push(`${dbField} = ?`);
-        values.push(value);
+        updates.push(`${dbColumn} = ?`);
+        values.push(val);
       }
-    });
+    }
 
-    if (fields.length === 0) {
+    if (updates.length === 0) {
       throw new Error("No fields to update");
     }
 
-    fields.push("updated_at = NOW()");
+    // Add updated_at
+    updates.push("updated_at = NOW()");
     values.push(job_uuid);
 
     const query = `
       UPDATE jobs
-      SET ${fields.join(", ")}
+      SET ${updates.join(", ")}
       WHERE job_uuid = ?
     `;
 
@@ -333,7 +167,6 @@ class Job {
     return await this.findByUuid(job_uuid);
   }
 
-  // ─── DELETE ───────────────────────────────────────────────
   static async delete(job_uuid) {
     const job = await this.findByUuid(job_uuid);
     if (!job) return null;

@@ -14,8 +14,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ─── FIX FOR SUBFOLDER (cPanel/Passenger) ──────────────────
-// This removes the base path (/yesm8pm/live) from the URL
-// so your routes (/, /api) work correctly.
 const basePath = process.env.PASSENGER_BASE_URI || '';
 app.use((req, res, next) => {
     if (basePath && req.url.startsWith(basePath)) {
@@ -36,13 +34,11 @@ app.get("/", (req, res) => {
 app.use("/api", jobRoutes);
 
 // ─── ERROR HANDLERS ─────────────────────────────────────────
-// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, message: "Internal server error" });
 });
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Endpoint not found" });
 });
