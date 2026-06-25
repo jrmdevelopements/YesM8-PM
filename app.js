@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const jobRoutes = require("./src/routes/jobRoutes");
 const pool = require("./src/config/db");
+const { errorHandler } = require("./src/utils/errorHandler");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,11 +35,9 @@ app.get("/", (req, res) => {
 app.use("/api", jobRoutes);
 
 // ─── ERROR HANDLERS ─────────────────────────────────────────
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ success: false, message: "Internal server error" });
-});
+app.use(errorHandler);
 
+// Catch 404 for API routes (optional, but keep the existing one)
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Endpoint not found" });
 });
