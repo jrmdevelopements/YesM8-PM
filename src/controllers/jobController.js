@@ -98,7 +98,7 @@ const jobController = {
       const { job_uuid } = req.params;
       const job = await Job.findByUuid(job_uuid);
       if (!job) {
-        throw new AppError("Job not found", 404);
+        throw new AppError("Job not found", 201);
       }
       res.status(200).json({ success: true, data: job });
     } catch (error) {
