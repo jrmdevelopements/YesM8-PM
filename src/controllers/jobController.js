@@ -1,5 +1,6 @@
 const Job = require("../models/Job");
 const { Parser } = require("json2csv");
+const { AppError } = require("../utils/errorHandler");  // ← ADD THIS
 
 // ─── Helpers ────────────────────────────────────────────────
 

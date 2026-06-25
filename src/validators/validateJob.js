@@ -1,5 +1,5 @@
 const { body, validationResult } = require("express-validator");
-
+const { AppError } = require("../utils/errorHandler");
 const validateJob = [
   body("job_uuid").notEmpty().withMessage("job_uuid is required"),
   body("sm8_account_uuid").notEmpty().withMessage("sm8_account_uuid is required"),
