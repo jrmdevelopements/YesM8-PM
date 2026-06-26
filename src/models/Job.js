@@ -12,6 +12,7 @@ class Job {
     "q_diff_app",
     "q_diff_app_details",
     "q_special_integration",
+     "q_integration_requirements",    // ✅ new
     "q_has_website",
     "q_website_address",
     "q_website_form_link",
@@ -45,6 +46,7 @@ class Job {
     diff_app: "q_diff_app",
     diff_app_details: "q_diff_app_details",
     special_integration: "q_special_integration",
+    integration_requirements: "q_integration_requirements",   // ✅   // ✅ new
     has_website: "q_has_website",
     website_address: "q_website_address",
     website_form_link: "q_website_form_link",

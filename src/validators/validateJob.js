@@ -12,6 +12,7 @@ const validateJob = [
   body("diffApp").optional().isIn(["Yes", "No"]),
   body("diffAppDetails").optional().isString(),
   body("specialIntegration").optional().isIn(["Yes", "No"]),
+  body("integrationRequirements").optional().isString(), 
   body("hasWebsite").optional().isIn(["Yes", "No"]),
   body("websiteAddress").optional().isURL().withMessage("Must be a valid URL"),
   body("websiteFormLink").optional().isIn(["Yes", "No"]),
