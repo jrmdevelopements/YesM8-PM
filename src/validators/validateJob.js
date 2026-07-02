@@ -34,7 +34,27 @@ const validateJob = [
   body("planNotes").optional().isString(),
   body("training").optional().isIn(["Google meet", "Ellenbrook", "Client Premises", "Other"]),
   body("otherNotes").optional().isString(),
-
+  // Prestart dropdowns (In Progress, Completed, N/A)
+  body("directorsDeclaration").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("xeroAgreementSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("createClientFolder").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("uploadSetupGoogleSheet").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("uploadLogoClientFolder").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("sendProjectKickoffEmail").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("planChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("accountCreated").optional().isIn(["Yes", "No"]),
+  body("accountOwnersLoginDetails").optional().isString(),
+  body("technicalDiscoveryCallSetup").optional().isIn(["Yes", "No"]),
+  body("warrantySetup").optional().isIn(["Yes", "No"]),
+  body("salesTimesheetAdded").optional().isIn(["Yes", "No", "N/A"]),
+  body("googleReviewSent").optional().isIn(["Yes", "No", "N/A"]),
+  body("googleReviewReceived").optional().isIn(["Yes", "No", "N/A"]),
+  body("trainingSessionOrganised").optional().isIn(["Yes", "No", "N/A"]),
+  body("trainingSessionNotes").optional().isString(),
+  // Rebate Management
+  body("rebateAppliedFor").optional().isIn(["Yes", "No", "N/A"]),
+  body("rebateAppliedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
+  body("rebateApprovedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

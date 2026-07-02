@@ -33,7 +33,26 @@ class Job {
     "q_explained_plans",
     "q_plan_notes",
     "q_training",
-    "q_other_notes"
+    "q_other_notes",
+    "q_directors_declaration",
+    "q_xero_agreement_sent",
+    "q_create_client_folder",
+    "q_upload_setup_google_sheet",
+    "q_upload_logo_client_folder",
+    "q_send_project_kickoff_email",
+    "q_plan_chosen",
+    "q_account_created",
+    "q_account_owners_login_details",
+    "q_technical_discovery_call_setup",
+    "q_warranty_setup",
+    "q_sales_timesheet_added",
+    "q_google_review_sent",
+    "q_google_review_received",
+    "q_training_session_organised",
+    "q_training_session_notes",
+    "q_rebate_applied_for",
+    "q_rebate_applied_email_sent",
+    "q_rebate_approved_email_sent"
   ];
 
   // Map internal snake_case keys (from controller) to DB column names
@@ -67,7 +86,26 @@ class Job {
     explained_plans: "q_explained_plans",
     plan_notes: "q_plan_notes",
     training: "q_training",
-    other_notes: "q_other_notes"
+    other_notes: "q_other_notes",
+    directors_declaration: "q_directors_declaration",
+    xero_agreement_sent: "q_xero_agreement_sent",
+    create_client_folder: "q_create_client_folder",
+    upload_setup_google_sheet: "q_upload_setup_google_sheet",
+    upload_logo_client_folder: "q_upload_logo_client_folder",
+    send_project_kickoff_email: "q_send_project_kickoff_email",
+    plan_chosen: "q_plan_chosen",
+    account_created: "q_account_created",
+    account_owners_login_details: "q_account_owners_login_details",
+    technical_discovery_call_setup: "q_technical_discovery_call_setup",
+    warranty_setup: "q_warranty_setup",
+    sales_timesheet_added: "q_sales_timesheet_added",
+    google_review_sent: "q_google_review_sent",
+    google_review_received: "q_google_review_received",
+    training_session_organised: "q_training_session_organised",
+    training_session_notes: "q_training_session_notes",
+    rebate_applied_for: "q_rebate_applied_for",
+    rebate_applied_email_sent: "q_rebate_applied_email_sent",
+    rebate_approved_email_sent: "q_rebate_approved_email_sent"
   };
 
   // JSON fields that need stringify/parse
