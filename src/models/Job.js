@@ -63,7 +63,28 @@ class Job {
     "q_design_templates_created",
     "q_design_templates_sent",
     "q_design_templates_uploaded",
-    "q_design_more_notes"
+    "q_design_more_notes",
+      "q_settings_upload_logo",
+  "q_settings_company_info",
+  "q_settings_tax_settings",
+  "q_settings_email_settings",
+  "q_settings_tasks",
+  "q_settings_region_languages",
+  "q_settings_notification",
+  "q_settings_job_settings",
+  "q_settings_invoicing",
+  "q_settings_job_settings2",
+  "q_settings_public_holiday",
+  "q_settings_staff_leave",
+  "q_settings_sm8_14",
+  "q_settings_staff_accounts",
+  "q_settings_labour_rates",
+  "q_settings_security_roles",
+  "q_settings_categories",
+  "q_settings_create_queues",
+  "q_settings_admin_invoice",
+  "q_settings_admin_reschedule",
+  "q_settings_notes"
   ];
 
   // Map internal snake_case keys (from controller) to DB column names
@@ -127,7 +148,28 @@ class Job {
     design_templates_created: "q_design_templates_created",
     design_templates_sent: "q_design_templates_sent",
     design_templates_uploaded: "q_design_templates_uploaded",
-    design_more_notes: "q_design_more_notes"
+    design_more_notes: "q_design_more_notes",
+    settings_upload_logo: "q_settings_upload_logo",
+  settings_company_info: "q_settings_company_info",
+  settings_tax_settings: "q_settings_tax_settings",
+  settings_email_settings: "q_settings_email_settings",
+  settings_tasks: "q_settings_tasks",
+  settings_region_languages: "q_settings_region_languages",
+  settings_notification: "q_settings_notification",
+  settings_job_settings: "q_settings_job_settings",
+  settings_invoicing: "q_settings_invoicing",
+  settings_job_settings2: "q_settings_job_settings2",
+  settings_public_holiday: "q_settings_public_holiday",
+  settings_staff_leave: "q_settings_staff_leave",
+  settings_sm8_14: "q_settings_sm8_14",
+  settings_staff_accounts: "q_settings_staff_accounts",
+  settings_labour_rates: "q_settings_labour_rates",
+  settings_security_roles: "q_settings_security_roles",
+  settings_categories: "q_settings_categories",
+  settings_create_queues: "q_settings_create_queues",
+  settings_admin_invoice: "q_settings_admin_invoice",
+  settings_admin_reschedule: "q_settings_admin_reschedule",
+  settings_notes: "q_settings_notes"
   };
 
   // JSON fields that need stringify/parse
