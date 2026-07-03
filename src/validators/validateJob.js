@@ -55,6 +55,18 @@ const validateJob = [
   body("rebateAppliedFor").optional().isIn(["Yes", "No", "N/A"]),
   body("rebateAppliedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
   body("rebateApprovedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
+  // Designs tab dropdowns
+  body("designAskOldInvoice").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designAskTerms").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designSendDesignerInfo").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designSendProposals").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designClientChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designUploadHeaders").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designUploadChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesCreated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesUploaded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designMoreNotes").optional().isString(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

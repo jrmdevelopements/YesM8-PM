@@ -52,7 +52,18 @@ class Job {
     "q_training_session_notes",
     "q_rebate_applied_for",
     "q_rebate_applied_email_sent",
-    "q_rebate_approved_email_sent"
+    "q_rebate_approved_email_sent",
+    "q_design_ask_old_invoice",
+    "q_design_ask_terms",
+    "q_design_send_designer_info",
+    "q_design_send_proposals",
+    "q_design_client_chosen",
+    "q_design_upload_headers",
+    "q_design_upload_chosen",
+    "q_design_templates_created",
+    "q_design_templates_sent",
+    "q_design_templates_uploaded",
+    "q_design_more_notes"
   ];
 
   // Map internal snake_case keys (from controller) to DB column names
@@ -105,7 +116,18 @@ class Job {
     training_session_notes: "q_training_session_notes",
     rebate_applied_for: "q_rebate_applied_for",
     rebate_applied_email_sent: "q_rebate_applied_email_sent",
-    rebate_approved_email_sent: "q_rebate_approved_email_sent"
+    rebate_approved_email_sent: "q_rebate_approved_email_sent",
+    design_ask_old_invoice: "q_design_ask_old_invoice",
+    design_ask_terms: "q_design_ask_terms",
+    design_send_designer_info: "q_design_send_designer_info",
+    design_send_proposals: "q_design_send_proposals",
+    design_client_chosen: "q_design_client_chosen",
+    design_upload_headers: "q_design_upload_headers",
+    design_upload_chosen: "q_design_upload_chosen",
+    design_templates_created: "q_design_templates_created",
+    design_templates_sent: "q_design_templates_sent",
+    design_templates_uploaded: "q_design_templates_uploaded",
+    design_more_notes: "q_design_more_notes"
   };
 
   // JSON fields that need stringify/parse
