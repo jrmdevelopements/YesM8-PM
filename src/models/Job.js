@@ -12,7 +12,7 @@ class Job {
     "q_diff_app",
     "q_diff_app_details",
     "q_special_integration",
-     "q_integration_requirements",    // ✅ new
+    "q_integration_requirements", // ✅ new
     "q_has_website",
     "q_website_address",
     "q_website_form_link",
@@ -64,27 +64,27 @@ class Job {
     "q_design_templates_sent",
     "q_design_templates_uploaded",
     "q_design_more_notes",
-      "q_settings_upload_logo",
-  "q_settings_company_info",
-  "q_settings_tax_settings",
-  "q_settings_email_settings",
-  "q_settings_tasks",
-  "q_settings_region_languages",
-  "q_settings_notification",
-  "q_settings_job_settings",
-  "q_settings_invoicing",
-  "q_settings_job_settings2",
-  "q_settings_public_holiday",
-  "q_settings_staff_leave",
-  "q_settings_sm8_14",
-  "q_settings_staff_accounts",
-  "q_settings_labour_rates",
-  "q_settings_security_roles",
-  "q_settings_categories",
-  "q_settings_create_queues",
-  "q_settings_admin_invoice",
-  "q_settings_admin_reschedule",
-  "q_settings_notes"
+    "q_settings_upload_logo",
+    "q_settings_company_info",
+    "q_settings_tax_settings",
+    "q_settings_email_settings",
+    "q_settings_tasks",
+    "q_settings_region_languages",
+    "q_settings_notification",
+    "q_settings_job_settings",
+    "q_settings_invoicing",
+    "q_settings_job_settings2",
+    "q_settings_public_holiday",
+    "q_settings_staff_leave",
+    "q_settings_sm8_14",
+    "q_settings_staff_accounts",
+    "q_settings_labour_rates",
+    "q_settings_security_roles",
+    "q_settings_categories",
+    "q_settings_create_queues",
+    "q_settings_admin_invoice",
+    "q_settings_admin_reschedule",
+    "q_settings_notes",
   ];
 
   // Map internal snake_case keys (from controller) to DB column names
@@ -97,7 +97,7 @@ class Job {
     diff_app: "q_diff_app",
     diff_app_details: "q_diff_app_details",
     special_integration: "q_special_integration",
-    integration_requirements: "q_integration_requirements",   // ✅   // ✅ new
+    integration_requirements: "q_integration_requirements", // ✅   // ✅ new
     has_website: "q_has_website",
     website_address: "q_website_address",
     website_form_link: "q_website_form_link",
@@ -150,26 +150,26 @@ class Job {
     design_templates_uploaded: "q_design_templates_uploaded",
     design_more_notes: "q_design_more_notes",
     settings_upload_logo: "q_settings_upload_logo",
-  settings_company_info: "q_settings_company_info",
-  settings_tax_settings: "q_settings_tax_settings",
-  settings_email_settings: "q_settings_email_settings",
-  settings_tasks: "q_settings_tasks",
-  settings_region_languages: "q_settings_region_languages",
-  settings_notification: "q_settings_notification",
-  settings_job_settings: "q_settings_job_settings",
-  settings_invoicing: "q_settings_invoicing",
-  settings_job_settings2: "q_settings_job_settings2",
-  settings_public_holiday: "q_settings_public_holiday",
-  settings_staff_leave: "q_settings_staff_leave",
-  settings_sm8_14: "q_settings_sm8_14",
-  settings_staff_accounts: "q_settings_staff_accounts",
-  settings_labour_rates: "q_settings_labour_rates",
-  settings_security_roles: "q_settings_security_roles",
-  settings_categories: "q_settings_categories",
-  settings_create_queues: "q_settings_create_queues",
-  settings_admin_invoice: "q_settings_admin_invoice",
-  settings_admin_reschedule: "q_settings_admin_reschedule",
-  settings_notes: "q_settings_notes"
+    settings_company_info: "q_settings_company_info",
+    settings_tax_settings: "q_settings_tax_settings",
+    settings_email_settings: "q_settings_email_settings",
+    settings_tasks: "q_settings_tasks",
+    settings_region_languages: "q_settings_region_languages",
+    settings_notification: "q_settings_notification",
+    settings_job_settings: "q_settings_job_settings",
+    settings_invoicing: "q_settings_invoicing",
+    settings_job_settings2: "q_settings_job_settings2",
+    settings_public_holiday: "q_settings_public_holiday",
+    settings_staff_leave: "q_settings_staff_leave",
+    settings_sm8_14: "q_settings_sm8_14",
+    settings_staff_accounts: "q_settings_staff_accounts",
+    settings_labour_rates: "q_settings_labour_rates",
+    settings_security_roles: "q_settings_security_roles",
+    settings_categories: "q_settings_categories",
+    settings_create_queues: "q_settings_create_queues",
+    settings_admin_invoice: "q_settings_admin_invoice",
+    settings_admin_reschedule: "q_settings_admin_reschedule",
+    settings_notes: "q_settings_notes",
   };
 
   // JSON fields that need stringify/parse
@@ -181,13 +181,19 @@ class Job {
     const placeholders = [];
     const values = [];
 
-    for (const [internalKey, dbColumn] of Object.entries(this.internalToDbMap)) {
+    for (const [internalKey, dbColumn] of Object.entries(
+      this.internalToDbMap,
+    )) {
       if (jobData[internalKey] !== undefined) {
         columns.push(dbColumn);
         placeholders.push("?");
         let val = jobData[internalKey];
         // Stringify JSON fields
-        if (this.JSON_FIELDS.includes(dbColumn) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(dbColumn) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         values.push(val);
@@ -208,30 +214,38 @@ class Job {
   }
 
   static async findByUuid(job_uuid) {
-    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [job_uuid]);
+    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [
+      job_uuid,
+    ]);
     return rows[0] || null;
   }
 
   static async findAll() {
-    const [rows] = await pool.query("SELECT * FROM jobs ORDER BY created_at DESC");
+    const [rows] = await pool.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC",
+    );
     return rows;
   }
 
   static async findByAccount(sm8_account_uuid) {
     const [rows] = await pool.query(
       "SELECT * FROM jobs WHERE sm8_account_uuid = ? ORDER BY created_at DESC",
-      [sm8_account_uuid]
+      [sm8_account_uuid],
     );
     return rows;
   }
 
-  static async findByAccountAndDateRange(sm8_account_uuid, start_date, end_date) {
+  static async findByAccountAndDateRange(
+    sm8_account_uuid,
+    start_date,
+    end_date,
+  ) {
     const [rows] = await pool.query(
       `SELECT * FROM jobs
        WHERE sm8_account_uuid = ?
          AND DATE(created_at) BETWEEN ? AND ?
        ORDER BY created_at DESC`,
-      [sm8_account_uuid, start_date, end_date]
+      [sm8_account_uuid, start_date, end_date],
     );
     return rows;
   }
@@ -240,11 +254,17 @@ class Job {
     const updates = [];
     const values = [];
 
-    for (const [internalKey, dbColumn] of Object.entries(this.internalToDbMap)) {
+    for (const [internalKey, dbColumn] of Object.entries(
+      this.internalToDbMap,
+    )) {
       if (jobData[internalKey] !== undefined) {
         let val = jobData[internalKey];
         // Stringify JSON fields
-        if (this.JSON_FIELDS.includes(dbColumn) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(dbColumn) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         updates.push(`${dbColumn} = ?`);
