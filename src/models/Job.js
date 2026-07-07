@@ -3,9 +3,9 @@ const Discovery = require("./Discovery");
 const ProjectManagement = require("./ProjectManagement");
 const Design = require("./Design");
 const Settings = require("./Settings");
-const Templates = require("./Templates");
-const Forms = require("./Forms");
-const Accounts = require("./Accounts");
+const Templates = require("./Templates");   // ← must be included
+const Forms = require("./Forms");           // ← must be included
+const Accounts = require("./Accounts");     // ← must be included
 
 class Job {
   static BASE_FIELDS = ["job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
@@ -23,11 +23,9 @@ class Job {
     ];
     const map = {};
     for (const col of allColumns) {
-      // Remove the 'q_' prefix and use that as the request key
       const key = col.replace(/^q_/, '');
       map[key] = col;
     }
-    // Add base fields (they are used directly, but we add them for completeness)
     map.sm8_account_uuid = "sm8_account_uuid";
     map.job_uuid = "job_uuid";
     map.generated_job_id = "generated_job_id";
@@ -35,7 +33,6 @@ class Job {
     return map;
   })();
 
-  // Convert incoming snake_case data to DB column names
   static mapToDbColumns(data) {
     const mapped = {};
     for (const [key, value] of Object.entries(data)) {
@@ -52,7 +49,6 @@ class Job {
 
       const dbData = this.mapToDbColumns(jobData);
 
-      // Insert base
       const baseCols = this.BASE_FIELDS;
       const baseVals = baseCols.map(c => dbData[c]);
       const baseQuery = `INSERT INTO jobs (${baseCols.join(',')}) VALUES (${baseCols.map(() => '?').join(',')})`;
@@ -60,7 +56,6 @@ class Job {
 
       const jobUuid = dbData.job_uuid;
 
-      // Child tables – pass the mapped dbData
       await Discovery.create(jobUuid, dbData, connection);
       await ProjectManagement.create(jobUuid, dbData, connection);
       await Design.create(jobUuid, dbData, connection);
@@ -84,6 +79,7 @@ class Job {
     if (rows.length === 0) return null;
     const job = rows[0];
 
+    // 🔥 Must fetch ALL seven tables
     const [discovery, projectManagement, design, settings, templates, forms, accounts] = await Promise.all([
       Discovery.findByJobUuid(job_uuid),
       ProjectManagement.findByJobUuid(job_uuid),
@@ -169,7 +165,6 @@ class Job {
 
       const dbData = this.mapToDbColumns(jobData);
 
-      // Update base
       const baseCols = ["generated_job_id", "notes"];
       const updates = [];
       const values = [];
@@ -187,7 +182,6 @@ class Job {
         );
       }
 
-      // Update child tables
       await Discovery.update(job_uuid, dbData, connection);
       await ProjectManagement.update(job_uuid, dbData, connection);
       await Design.update(job_uuid, dbData, connection);
