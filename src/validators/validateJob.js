@@ -104,7 +104,7 @@ const validateJob = [
 
   // Settings Add‑Ons
   body("automation").optional().isIn(["In Progress", "Completed", "N/A"]),
-  body("customerFeedback").optional().isIn(["In Progress", "Completed", "N/A"]),
+body("settingsCustomerFeedback").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("feedbackGoogleLink").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("recurringJobs").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("simpleEnquiryForm").optional().isIn(["In Progress", "Completed", "N/A"]),
@@ -113,7 +113,7 @@ const validateJob = [
   body("jobTemplates").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("jobAllocations").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("partialInvoicing").optional().isIn(["In Progress", "Completed", "N/A"]),
-  body("forms").optional().isIn(["In Progress", "Completed", "N/A"]),
+ body("settingsForms").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("assets").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("deputy").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("mailchimp").optional().isIn(["In Progress", "Completed", "N/A"]),
@@ -132,6 +132,75 @@ const validateJob = [
   body("bundles").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("addonMoreNotes").optional().isString(),
 
+  
+    // ─── Templates Tab ────────────────────────────────────────
+  // SMS Templates
+  body("partsOrderedTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("requestPaymentTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("smsInvoice").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("smsQuote").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("techDelayedTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("smsMoreNotes").optional().isString(),
+
+  // Email Templates
+  body("overduePaymentTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentDemandTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("standardInvoiceTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("standardQuoteTemplate").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("customerFeedback").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("emailMoreNotes").optional().isString(),
+
+  // Invoice Templates
+  body("copyInvoiceTemplateFromDefault").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("createInvoiceBasedOnQuote").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("updateDefaultInvoicePreferences").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("addBankDetails").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("addDiscountMaterial").optional().isIn(["In Progress", "Completed", "N/A"]),
+
+  // Work Order Templates
+  body("createWorkOrderBasedOnQuote").optional().isIn(["In Progress", "Completed", "N/A"]),
+
+  // Automation Checklist
+  body("paymentFollowup3Times").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentFollowup2DaysBefore").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentFollowup7DaysAfter").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentFollowup14DaysAfter").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentUpdateEmailDefault3rdFollowup").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("paymentUpdateSmsDefault3rdFollowup").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("quoteFollowup3Times").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("quoteFollowup2DaysAfter").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("quoteFollowup7DaysAfter").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("quoteFollowup14DaysAfter").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("unsuccessfulAfter30Days").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("updateBookingConfirmationEmailText").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("updateBookingReminderEmailText").optional().isIn(["In Progress", "Completed", "N/A"]),
+  
+    // ─── Forms Tab ─────────────────────────────────────────────
+  body("jsaRebranded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("swmsRebranded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("serviceReportRebranded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("jsaAdded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("swmsAdded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("serviceReportAdded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("formsMoreNotes").optional().isString(),
+
+  // ─── Accounts Tab ──────────────────────────────────────────
+  body("xeroIntegrated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("myobIntegrated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("quickbooksIntegrated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("stripeAccountCreated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("servicem8PayInstalled").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("xeroEmailSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("xeroAccountCodeCreated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("servicem8PaySettingsChecked").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("clientListProvided").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("clientListUploaded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("priceListProvided").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("priceListUploaded").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("dataImportNotes").optional().isString(),
+  body("accountsMoreNotes").optional().isString(),
+  
+  
   // Final check
   (req, res, next) => {
     const errors = validationResult(req);
