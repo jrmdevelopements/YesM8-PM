@@ -167,7 +167,10 @@ const jobController = {
       }
 
       // ... CSV generation remains same ...
-      const fields = [ /* ... unchanged ... */ ];
+      const fields = [
+        'job_uuid', 'sm8_account_uuid', 'generated_job_id', 'notes',
+        'q_what_after', 'q_diff_app', // ... list all relevant fields
+      ];
       const parser = new Parser({ fields, excelStrings: false });
       const csv = parser.parse(jobs);
       const filename = `jobs_export_${sm8_account_uuid}_${new Date()
