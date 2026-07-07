@@ -1,15 +1,13 @@
 const { body, validationResult } = require("express-validator");
 const { AppError } = require("../utils/errorHandler");
+
 const validateJob = [
   body("job_uuid").notEmpty().withMessage("job_uuid is required"),
-  body("sm8_account_uuid")
-    .notEmpty()
-    .withMessage("sm8_account_uuid is required"),
-  // Other standard fields
+  body("sm8_account_uuid").notEmpty().withMessage("sm8_account_uuid is required"),
   body("generated_job_id").optional().isString(),
   body("notes").optional().isString(),
 
-  // Discovery fields – enums and allowed values
+  // Discovery
   body("whatAfter").optional().isString(),
   body("diffApp").optional().isIn(["Yes", "No"]),
   body("diffAppDetails").optional().isString(),
@@ -22,56 +20,28 @@ const validateJob = [
   body("staffAndroid").optional().isIn(["Yes", "No"]),
   body("androidLimitation").optional().isIn(["Yes", "No"]),
   body("accounting").optional().isIn(["Yes", "No"]),
-  body("accountingPackage")
-    .optional()
-    .isIn(["Xero", "MYOB", "Quickbooks", "Other"]),
+  body("accountingPackage").optional().isIn(["Xero", "MYOB", "Quickbooks", "Other"]),
   body("accountingOtherWarning").optional().isIn(["Yes", "No"]),
-  body("avgJobs")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Must be a positive integer"),
+  body("avgJobs").optional().isInt({ min: 0 }).withMessage("Must be a positive integer"),
   body("templates").optional().isIn(["Invoice", "Quote", "Both"]),
   body("checklist").optional().isIn(["Yes", "No"]),
   body("checklistExamples").optional().isIn(["Yes", "No"]),
   body("forms").optional().isIn(["Yes", "No"]),
   body("formsExamples").optional().isIn(["Yes", "No"]),
-  body("specialFeatures")
-    .optional()
-    .isArray()
-    .withMessage("Special features must be an array"),
-  body("plan")
-    .optional()
-    .isIn([
-      "Starter - $29",
-      "Growing - $79",
-      "Premium - $149",
-      "Premium Plus - $349",
-    ]),
+  body("specialFeatures").optional().isArray().withMessage("Special features must be an array"),
+  body("plan").optional().isIn(["Starter - $29", "Growing - $79", "Premium - $149", "Premium Plus - $349"]),
   body("explainedPlans").optional().isIn(["Yes", "No"]),
   body("planNotes").optional().isString(),
-  body("training")
-    .optional()
-    .isIn(["Google meet", "Ellenbrook", "Client Premises", "Other"]),
+  body("training").optional().isIn(["Google meet", "Ellenbrook", "Client Premises", "Other"]),
   body("otherNotes").optional().isString(),
-  // Prestart dropdowns (In Progress, Completed, N/A)
-  body("directorsDeclaration")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("xeroAgreementSent")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("createClientFolder")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("uploadSetupGoogleSheet")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("uploadLogoClientFolder")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("sendProjectKickoffEmail")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+
+  // Project Management (prestart + invoicing + refresher)
+  body("directorsDeclaration").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("xeroAgreementSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("createClientFolder").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("uploadSetupGoogleSheet").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("uploadLogoClientFolder").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("sendProjectKickoffEmail").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("planChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("accountCreated").optional().isIn(["Yes", "No"]),
   body("accountOwnersLoginDetails").optional().isString(),
@@ -82,103 +52,90 @@ const validateJob = [
   body("googleReviewReceived").optional().isIn(["Yes", "No", "N/A"]),
   body("trainingSessionOrganised").optional().isIn(["Yes", "No", "N/A"]),
   body("trainingSessionNotes").optional().isString(),
-  // Rebate Management
   body("rebateAppliedFor").optional().isIn(["Yes", "No", "N/A"]),
   body("rebateAppliedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
   body("rebateApprovedEmailSent").optional().isIn(["Yes", "No", "N/A"]),
-  // Designs tab dropdowns
-  body("designAskOldInvoice")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+
+  body("invoicingInitialSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingInitialPaid").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingProgressiveSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingProgressivePaid").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingFinalSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingFinalPaid").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("invoicingNotes").optional().isString(),
+  body("refresherCallOrganised").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("refresherCallNotes").optional().isString(),
+
+  // Design
+  body("designAskOldInvoice").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("designAskTerms").optional().isIn(["In Progress", "Completed", "N/A"]),
-  body("designSendDesignerInfo")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designSendProposals")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designClientChosen")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designUploadHeaders")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designUploadChosen")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designTemplatesCreated")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designTemplatesSent")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("designTemplatesUploaded")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+  body("designSendDesignerInfo").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designSendProposals").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designClientChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designUploadHeaders").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designUploadChosen").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesCreated").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesSent").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("designTemplatesUploaded").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("designMoreNotes").optional().isString(),
 
-  // Settings tab dropdowns
-  body("settingsUploadLogo")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsCompanyInfo")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsTaxSettings")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsEmailSettings")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+  // Settings (original + add‑ons)
+  body("settingsUploadLogo").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsCompanyInfo").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsTaxSettings").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsEmailSettings").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("settingsTasks").optional().isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsRegionLanguages")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsNotification")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsJobSettings")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsInvoicing")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsJobSettings2")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsPublicHoliday")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsStaffLeave")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsRegionLanguages").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsNotification").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsJobSettings").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsInvoicing").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsJobSettings2").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsPublicHoliday").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsStaffLeave").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("settingsSM814").optional().isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsStaffAccounts")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsLabourRates")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsSecurityRoles")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsCategories")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsCreateQueues")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsAdminInvoice")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
-  body("settingsAdminReschedule")
-    .optional()
-    .isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsStaffAccounts").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsLabourRates").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsSecurityRoles").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsCategories").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsCreateQueues").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsAdminInvoice").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("settingsAdminReschedule").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("settingsNotes").optional().isString(),
+
+  // Settings Add‑Ons
+  body("automation").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("customerFeedback").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("feedbackGoogleLink").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("recurringJobs").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("simpleEnquiryForm").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("trackMyArrival").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("badges").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("jobTemplates").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("jobAllocations").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("partialInvoicing").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("forms").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("assets").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("deputy").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("mailchimp").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("servicem8Network").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("externalCalendars").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("calendarImport").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("twoWayEmail").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("advanceReportingPack").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("selfServeOnlineBooking").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("services").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("marginBilling").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("jobCosting").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("proposals").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("servicem8Phone").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("clientSites").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("bundles").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("addonMoreNotes").optional().isString(),
+
+  // Final check
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // Pass to central error handler
       const error = new AppError("Validation failed", 400, errors.array());
       return next(error);
     }
