@@ -8,28 +8,48 @@ const Forms = require("./Forms");           // ← must be included
 const Accounts = require("./Accounts");     // ← must be included
 
 class Job {
-  static BASE_FIELDS = ["id", "job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
+  static BASE_FIELDS = ["job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
 
   // Build mapping: snake_case request key → DB column name
   static internalToDbMap = (() => {
-    const allColumns = [
-      ...Discovery.COLUMNS,
-      ...ProjectManagement.COLUMNS,
-      ...Design.COLUMNS,
-      ...Settings.COLUMNS,
-      ...Templates.COLUMNS,
-      ...Forms.COLUMNS,
-      ...Accounts.COLUMNS,
-    ];
+    // Define the prefix for each model's columns
+    const prefixMap = {
+      Discovery: 'q_discovery_',
+      ProjectManagement: 'q_pm_',
+      Design: 'q_designs_',
+      Settings: 'q_settings_',
+      Templates: 'q_templates_',
+      Forms: 'q_forms_',
+      Accounts: 'q_accounts_',
+    };
+
     const map = {};
-    for (const col of allColumns) {
-      const key = col.replace(/^q_/, '');
-      map[key] = col;
-    }
+
+    // Helper to add mappings for a model
+    const addModelMappings = (Model, prefix) => {
+      for (const col of Model.COLUMNS) {
+        // The base column name without the 'q_' prefix
+        const baseKey = col.replace(/^q_/, '');
+        // The new prefixed key
+        const newKey = prefix + baseKey;
+        map[newKey] = col;
+      }
+    };
+
+    addModelMappings(Discovery, prefixMap.Discovery);
+    addModelMappings(ProjectManagement, prefixMap.ProjectManagement);
+    addModelMappings(Design, prefixMap.Design);
+    addModelMappings(Settings, prefixMap.Settings);
+    addModelMappings(Templates, prefixMap.Templates);
+    addModelMappings(Forms, prefixMap.Forms);
+    addModelMappings(Accounts, prefixMap.Accounts);
+
+    // Base fields – no prefix
     map.sm8_account_uuid = "sm8_account_uuid";
     map.job_uuid = "job_uuid";
     map.generated_job_id = "generated_job_id";
     map.notes = "notes";
+
     return map;
   })();
 
@@ -41,7 +61,8 @@ class Job {
     }
     return mapped;
   }
-
+  
+  
   static async create(jobData) {
     const connection = await pool.getConnection();
     try {
