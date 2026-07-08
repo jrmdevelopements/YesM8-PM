@@ -8,7 +8,7 @@ const Forms = require("./Forms");           // ← must be included
 const Accounts = require("./Accounts");     // ← must be included
 
 class Job {
-  static BASE_FIELDS = ["job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
+  static BASE_FIELDS = ["id", "job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
 
   // Build mapping: snake_case request key → DB column name
   static internalToDbMap = (() => {
