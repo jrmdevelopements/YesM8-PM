@@ -2,17 +2,17 @@ const pool = require("../config/db");
 
 class Design {
   static COLUMNS = [
-    "q_design_ask_old_invoice",
-    "q_design_ask_terms",
-    "q_design_send_designer_info",
-    "q_design_send_proposals",
-    "q_design_client_chosen",
-    "q_design_upload_headers",
-    "q_design_upload_chosen",
-    "q_design_templates_created",
-    "q_design_templates_sent",
-    "q_design_templates_uploaded",
-    "q_design_more_notes",
+    "q_designs_ask_old_invoice",
+    "q_designs_ask_terms",
+    "q_designs_send_designer_info",
+    "q_designs_send_proposals",
+    "q_designs_client_chosen",
+    "q_designs_upload_headers",
+    "q_designs_upload_chosen",
+    "q_designs_templates_created",
+    "q_designs_templates_sent",
+    "q_designs_templates_uploaded",
+    "q_designs_more_notes",
   ];
 
   static JSON_FIELDS = [];

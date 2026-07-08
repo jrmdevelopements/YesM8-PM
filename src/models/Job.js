@@ -3,66 +3,37 @@ const Discovery = require("./Discovery");
 const ProjectManagement = require("./ProjectManagement");
 const Design = require("./Design");
 const Settings = require("./Settings");
-const Templates = require("./Templates");   // ← must be included
-const Forms = require("./Forms");           // ← must be included
-const Accounts = require("./Accounts");     // ← must be included
+const Templates = require("./Templates");
+const Forms = require("./Forms");
+const Accounts = require("./Accounts");
 
 class Job {
-  static BASE_FIELDS = ["job_uuid", "sm8_account_uuid", "generated_job_id", "notes"];
+  static BASE_FIELDS = [
+    "job_uuid",
+    "sm8_account_uuid",
+    "generated_job_id",
+    "notes",
+  ];
 
-  // Build mapping: snake_case request key → DB column name
-  static internalToDbMap = (() => {
-    // Define the prefix for each model's columns
-    const prefixMap = {
-      Discovery: 'q_discovery_',
-      ProjectManagement: 'q_pm_',
-      Design: 'q_designs_',
-      Settings: 'q_settings_',
-      Templates: 'q_templates_',
-      Forms: 'q_forms_',
-      Accounts: 'q_accounts_',
-    };
-
-    const map = {};
-
-    // Helper to add mappings for a model
-    const addModelMappings = (Model, prefix) => {
-      for (const col of Model.COLUMNS) {
-        // The base column name without the 'q_' prefix
-        const baseKey = col.replace(/^q_/, '');
-        // The new prefixed key
-        const newKey = prefix + baseKey;
-        map[newKey] = col;
-      }
-    };
-
-    addModelMappings(Discovery, prefixMap.Discovery);
-    addModelMappings(ProjectManagement, prefixMap.ProjectManagement);
-    addModelMappings(Design, prefixMap.Design);
-    addModelMappings(Settings, prefixMap.Settings);
-    addModelMappings(Templates, prefixMap.Templates);
-    addModelMappings(Forms, prefixMap.Forms);
-    addModelMappings(Accounts, prefixMap.Accounts);
-
-    // Base fields – no prefix
-    map.sm8_account_uuid = "sm8_account_uuid";
-    map.job_uuid = "job_uuid";
-    map.generated_job_id = "generated_job_id";
-    map.notes = "notes";
-
-    return map;
-  })();
+  // Only map base fields (no prefix) to themselves
+  static internalToDbMap = {
+    job_uuid: "job_uuid",
+    sm8_account_uuid: "sm8_account_uuid",
+    generated_job_id: "generated_job_id",
+    notes: "notes",
+  };
 
   static mapToDbColumns(data) {
     const mapped = {};
     for (const [key, value] of Object.entries(data)) {
+      // If key is in the map, use the mapped value; otherwise keep as is
       const dbKey = this.internalToDbMap[key] || key;
       mapped[dbKey] = value;
     }
     return mapped;
   }
-  
-  
+
+  // ─── CREATE ──────────────────────────────────────────────
   static async create(jobData) {
     const connection = await pool.getConnection();
     try {
@@ -71,8 +42,8 @@ class Job {
       const dbData = this.mapToDbColumns(jobData);
 
       const baseCols = this.BASE_FIELDS;
-      const baseVals = baseCols.map(c => dbData[c]);
-      const baseQuery = `INSERT INTO jobs (${baseCols.join(',')}) VALUES (${baseCols.map(() => '?').join(',')})`;
+      const baseVals = baseCols.map((c) => dbData[c]);
+      const baseQuery = `INSERT INTO jobs (${baseCols.join(",")}) VALUES (${baseCols.map(() => "?").join(",")})`;
       await connection.query(baseQuery, baseVals);
 
       const jobUuid = dbData.job_uuid;
@@ -95,13 +66,23 @@ class Job {
     }
   }
 
+  // ─── FIND by UUID ────────────────────────────────────────
   static async findByUuid(job_uuid) {
-    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [job_uuid]);
+    const [rows] = await pool.query("SELECT * FROM jobs WHERE job_uuid = ?", [
+      job_uuid,
+    ]);
     if (rows.length === 0) return null;
     const job = rows[0];
 
-    // 🔥 Must fetch ALL seven tables
-    const [discovery, projectManagement, design, settings, templates, forms, accounts] = await Promise.all([
+    const [
+      discovery,
+      projectManagement,
+      design,
+      settings,
+      templates,
+      forms,
+      accounts,
+    ] = await Promise.all([
       Discovery.findByJobUuid(job_uuid),
       ProjectManagement.findByJobUuid(job_uuid),
       Design.findByJobUuid(job_uuid),
@@ -111,14 +92,34 @@ class Job {
       Accounts.findByJobUuid(job_uuid),
     ]);
 
-    return { ...job, ...discovery, ...projectManagement, ...design, ...settings, ...templates, ...forms, ...accounts };
+    return {
+      ...job,
+      ...discovery,
+      ...projectManagement,
+      ...design,
+      ...settings,
+      ...templates,
+      ...forms,
+      ...accounts,
+    };
   }
 
+  // ─── FIND ALL ────────────────────────────────────────────
   static async findAll() {
-    const [jobs] = await pool.query("SELECT * FROM jobs ORDER BY created_at DESC");
+    const [jobs] = await pool.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC",
+    );
     const fullJobs = await Promise.all(
       jobs.map(async (job) => {
-        const [discovery, projectManagement, design, settings, templates, forms, accounts] = await Promise.all([
+        const [
+          discovery,
+          projectManagement,
+          design,
+          settings,
+          templates,
+          forms,
+          accounts,
+        ] = await Promise.all([
           Discovery.findByJobUuid(job.job_uuid),
           ProjectManagement.findByJobUuid(job.job_uuid),
           Design.findByJobUuid(job.job_uuid),
@@ -127,20 +128,38 @@ class Job {
           Forms.findByJobUuid(job.job_uuid),
           Accounts.findByJobUuid(job.job_uuid),
         ]);
-        return { ...job, ...discovery, ...projectManagement, ...design, ...settings, ...templates, ...forms, ...accounts };
-      })
+        return {
+          ...job,
+          ...discovery,
+          ...projectManagement,
+          ...design,
+          ...settings,
+          ...templates,
+          ...forms,
+          ...accounts,
+        };
+      }),
     );
     return fullJobs;
   }
 
+  // ─── FIND by Account ─────────────────────────────────────
   static async findByAccount(sm8_account_uuid) {
     const [jobs] = await pool.query(
       "SELECT * FROM jobs WHERE sm8_account_uuid = ? ORDER BY created_at DESC",
-      [sm8_account_uuid]
+      [sm8_account_uuid],
     );
     const fullJobs = await Promise.all(
       jobs.map(async (job) => {
-        const [discovery, projectManagement, design, settings, templates, forms, accounts] = await Promise.all([
+        const [
+          discovery,
+          projectManagement,
+          design,
+          settings,
+          templates,
+          forms,
+          accounts,
+        ] = await Promise.all([
           Discovery.findByJobUuid(job.job_uuid),
           ProjectManagement.findByJobUuid(job.job_uuid),
           Design.findByJobUuid(job.job_uuid),
@@ -149,22 +168,44 @@ class Job {
           Forms.findByJobUuid(job.job_uuid),
           Accounts.findByJobUuid(job.job_uuid),
         ]);
-        return { ...job, ...discovery, ...projectManagement, ...design, ...settings, ...templates, ...forms, ...accounts };
-      })
+        return {
+          ...job,
+          ...discovery,
+          ...projectManagement,
+          ...design,
+          ...settings,
+          ...templates,
+          ...forms,
+          ...accounts,
+        };
+      }),
     );
     return fullJobs;
   }
 
-  static async findByAccountAndDateRange(sm8_account_uuid, start_date, end_date) {
+  // ─── FIND by Account and Date Range ─────────────────────
+  static async findByAccountAndDateRange(
+    sm8_account_uuid,
+    start_date,
+    end_date,
+  ) {
     const [jobs] = await pool.query(
       `SELECT * FROM jobs
        WHERE sm8_account_uuid = ? AND DATE(created_at) BETWEEN ? AND ?
        ORDER BY created_at DESC`,
-      [sm8_account_uuid, start_date, end_date]
+      [sm8_account_uuid, start_date, end_date],
     );
     const fullJobs = await Promise.all(
       jobs.map(async (job) => {
-        const [discovery, projectManagement, design, settings, templates, forms, accounts] = await Promise.all([
+        const [
+          discovery,
+          projectManagement,
+          design,
+          settings,
+          templates,
+          forms,
+          accounts,
+        ] = await Promise.all([
           Discovery.findByJobUuid(job.job_uuid),
           ProjectManagement.findByJobUuid(job.job_uuid),
           Design.findByJobUuid(job.job_uuid),
@@ -173,12 +214,22 @@ class Job {
           Forms.findByJobUuid(job.job_uuid),
           Accounts.findByJobUuid(job.job_uuid),
         ]);
-        return { ...job, ...discovery, ...projectManagement, ...design, ...settings, ...templates, ...forms, ...accounts };
-      })
+        return {
+          ...job,
+          ...discovery,
+          ...projectManagement,
+          ...design,
+          ...settings,
+          ...templates,
+          ...forms,
+          ...accounts,
+        };
+      }),
     );
     return fullJobs;
   }
 
+  // ─── UPDATE ──────────────────────────────────────────────
   static async update(job_uuid, jobData) {
     const connection = await pool.getConnection();
     try {
@@ -198,8 +249,8 @@ class Job {
       if (updates.length > 0) {
         values.push(job_uuid);
         await connection.query(
-          `UPDATE jobs SET ${updates.join(', ')} WHERE job_uuid = ?`,
-          values
+          `UPDATE jobs SET ${updates.join(", ")} WHERE job_uuid = ?`,
+          values,
         );
       }
 
@@ -221,6 +272,7 @@ class Job {
     }
   }
 
+  // ─── DELETE ──────────────────────────────────────────────
   static async delete(job_uuid) {
     const job = await this.findByUuid(job_uuid);
     if (!job) return null;

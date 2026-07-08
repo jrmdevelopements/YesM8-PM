@@ -1,4 +1,3 @@
-
 const pool = require("../config/db");
 
 class Settings {
@@ -24,7 +23,7 @@ class Settings {
     "q_settings_admin_invoice",
     "q_settings_admin_reschedule",
     "q_settings_notes",
-    // Add‑Ons
+    // Add‑Ons (already q_settings_)
     "q_settings_automation",
     "q_settings_customer_feedback",
     "q_settings_feedback_google_link",
@@ -62,7 +61,11 @@ class Settings {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(col) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -71,9 +74,9 @@ class Settings {
     if (Object.keys(row).length === 0) return;
     row.job_uuid = job_uuid;
     const cols = Object.keys(row);
-    const placeholders = cols.map(() => '?').join(',');
-    const values = cols.map(c => row[c]);
-    const query = `INSERT INTO settings (${cols.join(',')}) VALUES (${placeholders})`;
+    const placeholders = cols.map(() => "?").join(",");
+    const values = cols.map((c) => row[c]);
+    const query = `INSERT INTO settings (${cols.join(",")}) VALUES (${placeholders})`;
     await connection.query(query, values);
   }
 
@@ -82,7 +85,11 @@ class Settings {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(col) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -91,18 +98,21 @@ class Settings {
     if (Object.keys(row).length === 0) return;
     row.job_uuid = job_uuid;
     const cols = Object.keys(row);
-    const values = cols.map(c => row[c]);
-    const updates = cols.map(c => `${c} = VALUES(${c})`).join(', ');
+    const values = cols.map((c) => row[c]);
+    const updates = cols.map((c) => `${c} = VALUES(${c})`).join(", ");
     const query = `
-      INSERT INTO settings (${cols.join(',')})
-      VALUES (${cols.map(() => '?').join(',')})
+      INSERT INTO settings (${cols.join(",")})
+      VALUES (${cols.map(() => "?").join(",")})
       ON DUPLICATE KEY UPDATE ${updates}
     `;
     await connection.query(query, values);
   }
 
   static async findByJobUuid(job_uuid) {
-    const [rows] = await pool.query("SELECT * FROM settings WHERE job_uuid = ?", [job_uuid]);
+    const [rows] = await pool.query(
+      "SELECT * FROM settings WHERE job_uuid = ?",
+      [job_uuid],
+    );
     if (rows.length === 0) return null;
     return rows[0];
   }
