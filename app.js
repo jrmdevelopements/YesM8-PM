@@ -1,8 +1,10 @@
+// app.js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
 const jobRoutes = require("./src/routes/jobRoutes");
+const snapshotRoutes = require("./src/routes/snapshotRoutes");
 const pool = require("./src/config/db");
 const { errorHandler } = require("./src/utils/errorHandler");
 
@@ -26,13 +28,24 @@ app.get("/", (req, res) => {
   res.json({
     message: "YesM8 Job API",
     version: "1.0.0",
+    endpoints: {
+      jobs: "/api/jobs",
+      snapshots: "/api/snapshots",
+      dashboard: "/api/snapshots/dashboard/:account_uuid",
+      progress: "/api/snapshots/progress",
+      export: "/api/snapshots/export/:account_uuid?"
+    }
   });
 });
 
+// Routes
 app.use("/api", jobRoutes);
+app.use("/api", snapshotRoutes);
 
+// Error handling
 app.use(errorHandler);
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Endpoint not found" });
 });
