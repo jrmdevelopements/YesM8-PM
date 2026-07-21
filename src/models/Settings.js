@@ -2,6 +2,7 @@ const pool = require("../config/db");
 
 class Settings {
   static COLUMNS = [
+    // Preferences
     "q_settings_upload_logo",
     "q_settings_company_info",
     "q_settings_tax_settings",
@@ -15,15 +16,18 @@ class Settings {
     "q_settings_public_holiday",
     "q_settings_staff_leave",
     "q_settings_sm8_14",
+    // Staff Members / Roles
     "q_settings_staff_accounts",
     "q_settings_labour_rates",
     "q_settings_security_roles",
+    // Categories
     "q_settings_categories",
+    // Queues
     "q_settings_create_queues",
     "q_settings_admin_invoice",
     "q_settings_admin_reschedule",
     "q_settings_notes",
-    // Add‑Ons (already q_settings_)
+    // Add‑Ons
     "q_settings_automation",
     "q_settings_customer_feedback",
     "q_settings_feedback_google_link",
@@ -61,11 +65,7 @@ class Settings {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (
-          this.JSON_FIELDS.includes(col) &&
-          val !== null &&
-          val !== undefined
-        ) {
+        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -85,11 +85,7 @@ class Settings {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (
-          this.JSON_FIELDS.includes(col) &&
-          val !== null &&
-          val !== undefined
-        ) {
+        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -109,10 +105,7 @@ class Settings {
   }
 
   static async findByJobUuid(job_uuid) {
-    const [rows] = await pool.query(
-      "SELECT * FROM settings WHERE job_uuid = ?",
-      [job_uuid],
-    );
+    const [rows] = await pool.query("SELECT * FROM settings WHERE job_uuid = ?", [job_uuid]);
     if (rows.length === 0) return null;
     return rows[0];
   }

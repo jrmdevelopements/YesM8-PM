@@ -25,11 +25,7 @@ class Accounts {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (
-          this.JSON_FIELDS.includes(col) &&
-          val !== null &&
-          val !== undefined
-        ) {
+        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -49,11 +45,7 @@ class Accounts {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (
-          this.JSON_FIELDS.includes(col) &&
-          val !== null &&
-          val !== undefined
-        ) {
+        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -73,10 +65,7 @@ class Accounts {
   }
 
   static async findByJobUuid(job_uuid) {
-    const [rows] = await pool.query(
-      "SELECT * FROM accounts WHERE job_uuid = ?",
-      [job_uuid],
-    );
+    const [rows] = await pool.query("SELECT * FROM accounts WHERE job_uuid = ?", [job_uuid]);
     if (rows.length === 0) return null;
     return rows[0];
   }
