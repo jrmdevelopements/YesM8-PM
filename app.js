@@ -8,7 +8,6 @@ const snapshotRoutes = require("./src/routes/snapshotRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
 
 // Add this with other routes
-app.use("/api", taskRoutes);
 const pool = require("./src/config/db");
 const { errorHandler } = require("./src/utils/errorHandler");
 
