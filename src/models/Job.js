@@ -273,11 +273,35 @@ class Job {
   }
 
   // ─── DELETE ──────────────────────────────────────────────
+  // static async delete(job_uuid) {
+  //   const job = await this.findByUuid(job_uuid);
+  //   if (!job) return null;
+  //   await pool.query("DELETE FROM jobs WHERE job_uuid = ?", [job_uuid]);
+  //   return job;
+  // }
+  
   static async delete(job_uuid) {
     const job = await this.findByUuid(job_uuid);
     if (!job) return null;
-    await pool.query("DELETE FROM jobs WHERE job_uuid = ?", [job_uuid]);
-    return job;
+    
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      
+      // Delete tasks first
+      await connection.query("DELETE FROM tasks WHERE job_uuid = ?", [job_uuid]);
+      
+      // Then delete the job
+      await connection.query("DELETE FROM jobs WHERE job_uuid = ?", [job_uuid]);
+      
+      await connection.commit();
+      return job;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 }
 
