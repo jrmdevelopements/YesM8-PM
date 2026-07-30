@@ -18,6 +18,7 @@ class Discovery {
     "q_discovery_accounting",
     "q_discovery_accounting_package",
     "q_discovery_accounting_other_warning",
+    "q_discovery_accounting_myob_warning",
     "q_discovery_checklist",
     "q_discovery_checklist_examples",
     "q_discovery_forms",
