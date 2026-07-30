@@ -1,11 +1,13 @@
 // app.js
 const express = require("express");
+const path = require('path');
 const cors = require("cors");
 require("dotenv").config();
 
 const jobRoutes = require("./src/routes/jobRoutes");
 const snapshotRoutes = require("./src/routes/snapshotRoutes");
 const taskRoutes = require("./src/routes/taskRoutes");
+const { uploadImage } = require('./src/controllers/uploadController');
 
 // Add this with other routes
 const pool = require("./src/config/db");
@@ -15,8 +17,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' })); 
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Subfolder fix for cPanel/Passenger
 const basePath = process.env.PASSENGER_BASE_URI || '';
@@ -41,11 +43,18 @@ app.get("/", (req, res) => {
   });
 });
 
-// Routes
+// ─── Routes ──────────────────────────────────────────────────
 app.use("/api", jobRoutes);
 app.use("/api", snapshotRoutes);
 app.use("/api", taskRoutes);
-// Error handling
+
+// ─── Serve uploaded files ──────────────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ─── Image upload endpoint ─────────────────────────────────
+app.post('/api/upload/image', uploadImage);
+
+// ─── Error handling ─────────────────────────────────────────
 app.use(errorHandler);
 
 // 404 handler
@@ -53,7 +62,7 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: "Endpoint not found" });
 });
 
-// Graceful shutdown
+// ─── Graceful shutdown ─────────────────────────────────────
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
