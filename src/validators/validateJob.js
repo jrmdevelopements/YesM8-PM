@@ -23,6 +23,7 @@ const validateJob = [
   body("q_discovery_accounting").optional().isIn(["Yes", "No"]),
   body("q_discovery_accounting_package").optional().isIn(["Xero", "MYOB", "Quickbooks", "Other"]),
   body("q_discovery_accounting_other_warning").optional().isIn(["Yes", "No"]),
+  body("q_discovery_accounting_myob_warning").optional().isIn(["Yes", "No"]),
   body("q_discovery_avg_jobs").optional().isInt({ min: 0 }).withMessage("Must be a positive integer"),
   body("q_discovery_templates").optional().isIn(["Invoice", "Quote", "Both"]),
   body("q_discovery_checklist").optional().isIn(["Yes", "No"]),

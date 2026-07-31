@@ -256,6 +256,8 @@ class Snapshot {
           'q_discovery_has_website',
           'q_discovery_website_form_link',
           'q_discovery_devices',
+          'q_discovery_accounting_other_warning',
+          'q_discovery_accounting_myob_warning',   // <-- NEW
           'q_discovery_staff_android',
           'q_discovery_android_limitation',
           'q_discovery_accounting',
