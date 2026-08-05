@@ -8,7 +8,7 @@ const validateTask = [
   body("status").optional().isIn(["To Do", "In Progress", "Review", "Done", "Blocked"]),
   body("priority").optional().isIn(["Low", "Medium", "High", "Urgent"]),
   body("assigned_to").optional().isString(),
-  body("due_date").optional().isISO8601().withMessage("Invalid date format"),
+  // body("due_date").optional().isISO8601().withMessage("Invalid date format"),
   body("description").optional().isString(),
   
   (req, res, next) => {
