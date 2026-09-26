@@ -257,7 +257,7 @@ class Snapshot {
           'q_discovery_website_form_link',
           'q_discovery_devices',
           'q_discovery_accounting_other_warning',
-          'q_discovery_accounting_myob_warning',   // <-- NEW
+          'q_discovery_accounting_myob_warning',
           'q_discovery_staff_android',
           'q_discovery_android_limitation',
           'q_discovery_accounting',
@@ -269,7 +269,8 @@ class Snapshot {
           'q_discovery_special_features',
           'q_discovery_plan',
           'q_discovery_training',
-        ]
+        ],
+        isDiscovery: true // flag for permissive completion rules
       },
       projectManagement: {
         data: snapshot.projectManagement,
@@ -431,7 +432,11 @@ class Snapshot {
 
     for (const [sectionName, config] of Object.entries(sections)) {
       if (config.data) {
-        const sectionProgress = this.calculateSectionProgress(config.data, config.fields);
+        const sectionProgress = this.calculateSectionProgress(
+          config.data,
+          config.fields,
+          config.isDiscovery === true
+        );
         progress.sections[sectionName] = sectionProgress;
         totalProgress += sectionProgress;
         sectionCount++;
@@ -444,9 +449,12 @@ class Snapshot {
   }
 
   /**
-   * Calculate progress for a single section
+   * Calculate progress for a single section.
+   * @param {Object} sectionData - The data for the section.
+   * @param {Array<string>} fieldNames - The fields to include in progress.
+   * @param {boolean} isDiscovery - If true, uses permissive completion rules (any non-empty value counts).
    */
-  static calculateSectionProgress(sectionData, fieldNames) {
+  static calculateSectionProgress(sectionData, fieldNames, isDiscovery = false) {
     let completed = 0;
     let total = 0;
 
@@ -454,15 +462,40 @@ class Snapshot {
       if (sectionData[field] !== undefined && sectionData[field] !== null) {
         total++;
         const value = sectionData[field];
-        if (value === 'Completed' || value === 'N/A' || value === 'Yes') {
-          completed++;
-        } else if (value === 'In Progress') {
-          completed += 0.5;
+
+        if (isDiscovery) {
+          // Discovery: any non-empty answer is considered complete.
+          // 'In Progress' gets half credit.
+          if (this.isEmptyValue(value)) {
+            // incomplete
+          } else if (typeof value === 'string' && value.trim().toLowerCase() === 'in progress') {
+            completed += 0.5;
+          } else {
+            completed++;
+          }
+        } else {
+          // Original logic for other sections (checklist style)
+          if (value === 'Completed' || value === 'N/A' || value === 'Yes') {
+            completed++;
+          } else if (value === 'In Progress') {
+            completed += 0.5;
+          }
         }
       }
     }
 
     return total > 0 ? Math.round((completed / total) * 100) : 0;
+  }
+
+  /**
+   * Helper to check if a value is considered empty.
+   */
+  static isEmptyValue(value) {
+    if (value === undefined || value === null) return true;
+    if (typeof value === 'string' && value.trim() === '') return true;
+    if (Array.isArray(value) && value.length === 0) return true;
+    if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return true;
+    return false;
   }
 
   /**
