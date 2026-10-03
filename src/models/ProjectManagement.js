@@ -19,6 +19,8 @@ class ProjectManagement {
     "q_pm_training_session_organised",
     "q_pm_training_session_notes",
     "q_pm_rebate_applied_for",
+    "q_pm_rebate_start_date", // <-- new
+    "q_pm_rebate_expiry_date", // <-- new
     "q_pm_rebate_applied_email_sent",
     "q_pm_rebate_approved_email_sent",
     "q_pm_invoicing_initial_sent",
@@ -39,7 +41,11 @@ class ProjectManagement {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(col) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -48,9 +54,9 @@ class ProjectManagement {
     if (Object.keys(row).length === 0) return;
     row.job_uuid = job_uuid;
     const cols = Object.keys(row);
-    const placeholders = cols.map(() => '?').join(',');
-    const values = cols.map(c => row[c]);
-    const query = `INSERT INTO project_management (${cols.join(',')}) VALUES (${placeholders})`;
+    const placeholders = cols.map(() => "?").join(",");
+    const values = cols.map((c) => row[c]);
+    const query = `INSERT INTO project_management (${cols.join(",")}) VALUES (${placeholders})`;
     await connection.query(query, values);
   }
 
@@ -59,7 +65,11 @@ class ProjectManagement {
     for (const col of this.COLUMNS) {
       if (data[col] !== undefined) {
         let val = data[col];
-        if (this.JSON_FIELDS.includes(col) && val !== null && val !== undefined) {
+        if (
+          this.JSON_FIELDS.includes(col) &&
+          val !== null &&
+          val !== undefined
+        ) {
           val = JSON.stringify(val);
         }
         row[col] = val;
@@ -68,18 +78,21 @@ class ProjectManagement {
     if (Object.keys(row).length === 0) return;
     row.job_uuid = job_uuid;
     const cols = Object.keys(row);
-    const values = cols.map(c => row[c]);
-    const updates = cols.map(c => `${c} = VALUES(${c})`).join(', ');
+    const values = cols.map((c) => row[c]);
+    const updates = cols.map((c) => `${c} = VALUES(${c})`).join(", ");
     const query = `
-      INSERT INTO project_management (${cols.join(',')})
-      VALUES (${cols.map(() => '?').join(',')})
+      INSERT INTO project_management (${cols.join(",")})
+      VALUES (${cols.map(() => "?").join(",")})
       ON DUPLICATE KEY UPDATE ${updates}
     `;
     await connection.query(query, values);
   }
 
   static async findByJobUuid(job_uuid) {
-    const [rows] = await pool.query("SELECT * FROM project_management WHERE job_uuid = ?", [job_uuid]);
+    const [rows] = await pool.query(
+      "SELECT * FROM project_management WHERE job_uuid = ?",
+      [job_uuid],
+    );
     if (rows.length === 0) return null;
     return rows[0];
   }

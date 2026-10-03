@@ -55,6 +55,14 @@ const validateJob = [
   body("q_pm_training_session_organised").optional().isIn(["Yes", "No", "N/A"]),
   body("q_pm_training_session_notes").optional().isString(),
   body("q_pm_rebate_applied_for").optional().isIn(["Yes", "No", "N/A"]),
+  body("q_pm_rebate_start_date")
+  .optional({ values: "falsy" })
+  .isISO8601()
+  .withMessage("Rebate start date must be a valid date (YYYY-MM-DD)"),
+  body("q_pm_rebate_expiry_date")
+  .optional({ values: "falsy" })
+  .isISO8601()
+  .withMessage("Rebate expiry date must be a valid date (YYYY-MM-DD)"),
   body("q_pm_rebate_applied_email_sent").optional().isIn(["Yes", "No", "N/A"]),
   body("q_pm_rebate_approved_email_sent").optional().isIn(["Yes", "No", "N/A"]),
   body("q_pm_invoicing_initial_sent").optional().isIn(["In Progress", "Completed", "N/A"]),
