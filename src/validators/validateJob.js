@@ -173,7 +173,8 @@ const validateJob = [
   body("q_templates_unsuccessful_after_30_days").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_templates_update_booking_confirmation_email_text").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_templates_update_booking_reminder_email_text").optional().isIn(["In Progress", "Completed", "N/A"]),
-
+body("q_templates_additional_sms_text").optional().isIn(["In Progress", "Completed", "N/A"]),
+body("q_templates_additional_sms_text_automation").optional().isIn(["In Progress", "Completed", "N/A"]),
   // ─── Accounts (q_accounts_) ────────────────────────────────
   body("q_accounts_xero_integrated").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_accounts_myob_integrated").optional().isIn(["In Progress", "Completed", "N/A"]),
