@@ -105,6 +105,7 @@ const validateJob = [
   body("q_settings_staff_accounts").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_labour_rates").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_security_roles").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("q_settings_yes_m8_login_details").optional().isString(),   // ← ADD THIS
   body("q_settings_categories").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_create_queues").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_admin_invoice").optional().isIn(["In Progress", "Completed", "N/A"]),
