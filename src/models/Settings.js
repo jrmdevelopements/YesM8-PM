@@ -20,6 +20,7 @@ class Settings {
     "q_settings_staff_accounts",
     "q_settings_labour_rates",
     "q_settings_security_roles",
+    "q_settings_yes_m8_login_details",
      "q_settings_categories",
  
     // Queues
