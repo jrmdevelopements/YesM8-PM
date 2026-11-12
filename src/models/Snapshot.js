@@ -374,6 +374,7 @@ class Snapshot {
           'q_templates_sms_invoice',
           'q_templates_sms_quote',
           'q_templates_tech_delayed_template',
+           'q_templates_additional_sms_text',                       // ← NEW
           'q_templates_overdue_payment_template',
           'q_templates_payment_demand_template',
           'q_templates_standard_invoice_template',
@@ -395,6 +396,7 @@ class Snapshot {
           'q_templates_unsuccessful_after_30_days',
           'q_templates_update_booking_confirmation_email_text',
           'q_templates_update_booking_reminder_email_text',
+              'q_templates_additional_sms_text_automation',            // ← NEW
         ]
       },
       forms: {

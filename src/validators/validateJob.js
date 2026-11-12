@@ -105,6 +105,7 @@ const validateJob = [
   body("q_settings_staff_accounts").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_labour_rates").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_security_roles").optional().isIn(["In Progress", "Completed", "N/A"]),
+  body("q_settings_yes_m8_login_details").optional().isString(),   // ← ADD THIS
   body("q_settings_categories").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_create_queues").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_settings_admin_invoice").optional().isIn(["In Progress", "Completed", "N/A"]),
@@ -173,7 +174,8 @@ const validateJob = [
   body("q_templates_unsuccessful_after_30_days").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_templates_update_booking_confirmation_email_text").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_templates_update_booking_reminder_email_text").optional().isIn(["In Progress", "Completed", "N/A"]),
-
+body("q_templates_additional_sms_text").optional().isIn(["In Progress", "Completed", "N/A"]),
+body("q_templates_additional_sms_text_automation").optional().isIn(["In Progress", "Completed", "N/A"]),
   // ─── Accounts (q_accounts_) ────────────────────────────────
   body("q_accounts_xero_integrated").optional().isIn(["In Progress", "Completed", "N/A"]),
   body("q_accounts_myob_integrated").optional().isIn(["In Progress", "Completed", "N/A"]),
